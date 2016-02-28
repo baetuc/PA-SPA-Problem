@@ -26,8 +26,19 @@ public class Project {
         this.maxCapacity = maxCapacity;
         this.leftCapacity = maxCapacity;
         this.proposingLecturer = proposingLecturer;
-        // at the construct time, the assigned students list must be empty.
         this.assignedStudents = new ArrayList<>();
+        // at the construct time, the assigned students list must be empty.
+
+        /*
+        TODO: Check with professor if the logic was OK.
+        if(proposingLecturer != null) {
+            final Lecturer finalLecturer = proposingLecturer;
+            this.assignedStudents = new PriorityQueue<>(11, (Student lhs, Student rhs) ->
+                    finalLecturer.getPreferredStudents().indexOf(lhs) - finalLecturer.getPreferredStudents().indexOf(rhs)
+
+            );
+        }
+        */
     }
 
     public Project(String title, int maxCapacity) {
@@ -67,7 +78,6 @@ public class Project {
         this.proposingLecturer = proposingLecturer;
     }
 
-
     public List<Student> getAssignedStudents() {
         return assignedStudents;
     }
@@ -90,13 +100,12 @@ public class Project {
             return false;
         }
         Project that = (Project) obj;
-        return (this.title.equals(that.getTitle()) && this.maxCapacity == that.getMaxCapacity() &&
-                this.proposingLecturer.equals(that.getProposingLecturer()));
+        return (this.title.equals(that.getTitle()) && this.maxCapacity == that.getMaxCapacity());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(title, leftCapacity, proposingLecturer);
+        return Objects.hashCode(title, leftCapacity);
     }
 
     @Override

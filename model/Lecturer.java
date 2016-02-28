@@ -3,6 +3,8 @@ package model;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -14,6 +16,25 @@ public class Lecturer extends Person {
     private List<Project> proposedProjects;
     private List<Student> preferredStudents;
 
+
+    public Lecturer(String firstName, String lastName, String email, int maxCapacity, List<Project> proposedProjects,
+                    List<Student> preferredStudents) {
+        super(firstName, lastName, email);
+        Preconditions.checkArgument(maxCapacity > 0, "Maximum capacity must be greater than zero.");
+        this.maxCapacity = maxCapacity;
+        this.leftCapacity = maxCapacity;
+        this.proposedProjects = proposedProjects;
+        this.preferredStudents = preferredStudents;
+        if(proposedProjects != null) {
+            for (Project project : proposedProjects) {
+                project.setProposingLecturer(this);
+            }
+        }
+    }
+
+    public Lecturer(String firstName, String lastName, int maxCapacity) {
+        this(firstName, lastName, null, maxCapacity, null, null);
+    }
 
     public int getMaxCapacity() {
         return maxCapacity;
@@ -31,28 +52,16 @@ public class Lecturer extends Person {
         this.leftCapacity = leftCapacity;
     }
 
-
-    public Lecturer(String firstName, String lastName, String email, int maxCapacity, List<Project> proposedProjects,
-                    List<Student> preferredStudents) {
-        super(firstName, lastName, email);
-        Preconditions.checkArgument(maxCapacity > 0, "Maximum capacity must be greater than zero.");
-        this.maxCapacity = maxCapacity;
-        this.leftCapacity = maxCapacity;
-        this.proposedProjects = proposedProjects;
-        this.preferredStudents = preferredStudents;
-    }
-
-    public Lecturer(String firstName, String lastName, int maxCapacity) {
-        this(firstName, lastName, null, maxCapacity, null, null);
-    }
-
-
     public List<Project> getProposedProjects() {
         return proposedProjects;
     }
 
     public void setProposedProjects(List<Project> proposedProjects) {
+        Preconditions.checkNotNull(proposedProjects);
         this.proposedProjects = proposedProjects;
+        for (Project project : proposedProjects) {
+            project.setProposingLecturer(this);
+        }
     }
 
     public List<Student> getPreferredStudents() {
@@ -63,14 +72,17 @@ public class Lecturer extends Person {
         this.preferredStudents = preferredStudents;
     }
 
+    public List<Student> getAssignedStudents() {
+        HashSet<Student> students = new HashSet<>();
+        for(Project project : proposedProjects) {
+            students.addAll(project.getAssignedStudents());
+        }
+        return new ArrayList<>(students);
+    }
+
     @Override
     public boolean isFree() {
-        for (Project project : proposedProjects) {
-            if (project.isFree()) {
-                return true;
-            }
-        }
-        return false;
+        return leftCapacity > 0;
     }
 
     @Override

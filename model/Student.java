@@ -58,6 +58,9 @@ public class Student extends Person {
             return false;
         }
         Student otherStud = (Student) obj;
+        if(this.assignedProject == null) {
+            return otherStud.getAssignedProject() == null;
+        }
         return (this.assignedProject.equals(otherStud.getAssignedProject()));
     }
 
